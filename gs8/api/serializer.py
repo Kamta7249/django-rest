@@ -1,0 +1,47 @@
+from rest_framework import serializers
+from .models import Student
+
+
+class StudentSerialzer(serializers.ModelSerializer):
+    # Validators
+    def start_with_a(value):
+        if value[0].lower() != 'a':
+            raise serializers.ValidationError('Name should be start with A')
+    name = serializers.CharField(validators=[start_with_a])
+
+    class Meta:
+        model = Student
+        fields = ['name','roll','city']
+
+
+
+    # name = serializers.CharField(max_length=25, validators=[start_with_r])
+    # roll = serializers.IntegerField()
+    # city = serializers.CharField(max_length=20)
+
+    # def create(self, validated_data):
+    #     return Student.objects.create(**validated_data)
+    
+    # def update(self, instance, validated_data):
+    #     # print(instance.name)
+    #     instance.name = validated_data.get('name',instance.name)
+    #     # print(instance.name)
+    #     instance.roll = validated_data.get('roll',instance.roll)
+    #     instance.city = validated_data.get('city',instance.city)
+    #     instance.save()
+    #     return instance
+    
+    # Field Level Validation.
+    def validate_roll(self, value):
+        if value >= 200:
+            raise serializers.ValidationError('Seat Full')
+        return value
+    
+    # Object Level Validation.
+    def validate(self, data):
+        name = data.get('name')
+        city = data.get('city')
+        if name.lower() == 'ankit' and city.lower() != 'dahod':
+            raise serializers.ValidationError('City must be Dahod.') 
+        return data
+    
